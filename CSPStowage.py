@@ -52,14 +52,13 @@ class RunProblem:
         self.problem.addConstraint(AllDifferentConstraint())
 
         # Constraint 2: There cannot be a container in a cell whose 'below' cells are empty
-        self.problem.addConstraint(c.constraintNotFloatingCell(cell, self.state.layout, self.variables)
-                                   for cell in self.domain)
+        self.problem.addConstraint(c.constraintNotFloatingCell(x, self.state.layout, self.variables)
+                                   for x in self.variables)
 
         # Constraint 3:  There cannot be a redistribution of cells in Port 1
-        port1var  = [x for x in self.variables]
         self.problem.addConstraint(
-            c.constraintNoRedistribution(cell, self.state.layout, self.variables, self.state.containers)
-            for cell in self.domain)
+            c.constraintNoRedistribution(x, self.state.layout, self.variables, self.state.containers)
+            for x in self.variables if self.state.containers[x][2] == 2)
 
     def find_solutions(self):
 
