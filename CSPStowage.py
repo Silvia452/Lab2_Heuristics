@@ -13,6 +13,7 @@ class RunProblem:
         self.init_state(arg['layout'], arg['container'])
         self.add_constraints()
 
+
     def init_state(self, file_map, file_container):
         """
         - The variables will be our containers c : [0, 1, 2, 3, 4, 5, 6, ... , n]
@@ -30,6 +31,8 @@ class RunProblem:
 
         # Add variables and domains
         self.variables = range(len(self.state.containers))  # => [0, 1, 2, 3, 4, 5, 6, ... , n]
+
+        #Domain list without X cells (floor)
         for i in range(len(self.state.layout)):
             for j in range(len(self.state.layout[i])):
                 if self.state.layout[i][j] != 'X':
@@ -38,12 +41,15 @@ class RunProblem:
 
         # self.problem.addVariables(self.variables, self.domain)
         for x in self.variables:
-            typeContainer = self.state.containers[x][2]
+            typeContainer = self.state.containers[x][1]
+            #Add domain to standard containers in normal cells
             if typeContainer == "S":
-                self.problem.addVariable(x, [d for d in self.domain if self.state.layout[d[0]][d[1]] == 'N'])
+                self.problem.addVariable(str(x), [d for d in self.domain if self.state.layout[d[0]][d[1]] == 'N'])
 
-            else:  # typeContainer == "R"
-                self.problem.addVariable(x, [d for d in self.domain if self.state.layout[d[0]][d[1]] == 'E'])
+            # Add domain to refrigerated containers in normal cells
+            else:
+                # typeContainer == "R"
+                self.problem.addVariable(str(x), [d for d in self.domain if self.state.layout[d[0]][d[1]] == 'E'])
 
     def add_constraints(self):
         c = ConstraintFunctions()
@@ -52,17 +58,20 @@ class RunProblem:
         self.problem.addConstraint(AllDifferentConstraint())
 
         # Constraint 2: There cannot be a container in a cell whose 'below' cells are empty
-        self.problem.addConstraint(c.constraintNotFloatingCell(x, self.state.layout, self.variables)
-                                   for x in self.variables)
+        for x in self.variables:
+            self.problem.addConstraint(c.constraintNotFloatingCell, variables=[str(x), self.state.layout, self.variables])
 
         # Constraint 3:  There cannot be a redistribution of cells in Port 1
-        self.problem.addConstraint(
-            c.constraintNoRedistribution(x, self.state.layout, self.variables, self.state.containers)
-            for x in self.variables if self.state.containers[x][2] == 2)
-
-    def find_solutions(self):
+        for x in self.variables:
+            if self.state.containers[x][1] == 2:
+                self.problem.addConstraint(
+                    c.constraintNoRedistribution, variables=[str(x), self.state.layout,
+                                                             self.variables, self.state.containers])
 
         self.problem.getSolutions()
+
+
+
 
 
 def readCommand(argv):
@@ -71,19 +80,20 @@ def readCommand(argv):
     """
     from optparse import OptionParser
     usageStr = """
-    USAGE:      python stowage.py <options>
-    EXAMPLES:   (1) 
+    USAGE:      python python CSPStowage.py -p <path> -l <map> -c <containers>
+    EXAMPLES:   (1) python python CSPStowage.py -p CSP-tests -l mapa1 -c contenedores1
     """
     parser = OptionParser(usageStr)
 
-    # -p <path> -m <map> -c <containers>
-    parser.add_option('-p', '--path', dest='path', type='text',
-                      help=default('the PATH to test files: map and containers'), metavar='PATH', default="./tests")
+    # -p <path> -l <map> -c <containers>
+    parser.add_option('-p', '--path', dest='path',
+                      help='the PATH to test files: map and containers',
+                      metavar='PATH', default="CSP-tests")
     parser.add_option('-l', '--layout', dest='layout',
-                      help=default('the MAP_FILE from which to load the map layout'),
+                      help='the MAP_FILE from which to load the map layout',
                       metavar='LAYOUT_FILE')
     parser.add_option('-c', '--container', dest='container',
-                      help=default('the CONTAINER_FILE from which to load the list of containers and their types'),
+                      help='the CONTAINER_FILE from which to load the list of containers and their types',
                       metavar='CONTAINERS_FILE')
 
     options, otherjunk = parser.parse_args(argv)
@@ -93,11 +103,11 @@ def readCommand(argv):
     args = dict()
 
     # Choose a layout map
-    args['layout'] = options.path + options.layout
+    args['layout'] = r'./' + options.path + r'/' + options.layout
     if args['layout'] is None: raise Exception("The layout " + options.layout + " cannot be found")
 
     # Choose a container list
-    args['container'] = options.path + options.container
+    args['container'] = r'./' + options.path + r'/' + options.container
     if args['container'] is None: raise Exception("The container list " + options.container + "cannot be found")
 
     return args

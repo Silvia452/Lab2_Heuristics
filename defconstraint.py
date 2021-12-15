@@ -2,25 +2,6 @@ class ConstraintFunctions:
     def __init__(self):
         pass
 
-    """    @staticmethod
-    def constraintsNormalCell(x, layout, y, containers):
-        #Constraint: In normal cell only standard containers
-         #           x:cell (i,j)     y: container y
-          #          layout: map      containers: list of containers
-                   
-        if layout[x[0], x[1]] == 'N' and containers[y][1] == 'S':
-            layout[x[0]][x[1]] = y
-            return True
-        return False
-
-    @staticmethod
-    def constraintRefrigeratedCell(x, layout, y, containers):
-       # Contraint: In energy cell only standard refrigerated
-        if layout[x[0], x[1]] == 'E' and containers[y][1] == 'R':
-            layout[x[0]][x[1]] = y
-            return True
-        return False"""
-
     @staticmethod
     def constraintNotFloatingCell(cell, layout, variables):
         """Constraint: There cannot be a container in a cell whose 'below' cells are empty
@@ -32,9 +13,8 @@ class ConstraintFunctions:
         # cell = (i, j) : where container c should be allocated
         # variables is the list with their values assigned: [(m,n), (m,n), ...]
         # layout is the map: [ [N, N, N, N], [E, E, E, E], ...]
-
         for k in range(cell[1] + 1, len(layout)):  # iterate through depth
-            if layout[cell[0]][k] is "X":
+            if layout[cell[0]][k] == "X":
                 return True
             else:
                 for x in variables:
@@ -51,7 +31,7 @@ class ConstraintFunctions:
                             if any (i,k) = c' and container[c'] = (c', -, 1)  for all k>j """
 
         for k in range(cell[1] + 1, len(layout)):  # iterate through depth
-            if layout[cell[0]][k] is "X":
+            if layout[cell[0]][k] == "X":
                 return True
             else:
                 for x in variables:

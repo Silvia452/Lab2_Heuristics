@@ -1,6 +1,9 @@
 import re
 import sys
 
+CRED = '\033[91m'
+CEND = '\033[0m'
+
 
 class State:
     def __init__(self):
@@ -20,12 +23,14 @@ class State:
             raw_lines = handle.read().split('\n')
 
         for line in raw_lines:
-            regex = r"((N|E|X) )*(N|E|X)\n?"
-            if not re.match(line.split(), regex):
-                print('error parsing test file: %s' % file)
+            regex = r"((N|E|X)\s)*(N|E|X){1}(\n)*"
+            self.layout.append(line.split())
+            """if re.match(line, regex) is None:
+                print(line)
+                print(CRED + 'error parsing test file: %s' % file + CEND)
                 sys.exit(1)
             else:
-                self.layout.append(line.split())
+                self.layout.append(line.split())"""
 
         """Read output:
                 => layout =  [ [N,N,N,N], [N,N,N,N], [E,N,N,E], [X,E,E,X], [X,X,X,X]]
@@ -51,8 +56,10 @@ class State:
 
         for line in raw_lines:
             regex = r"\d+ (S|R) (1|2)\n?"
-            if not re.match(line.split(), regex):
-                print('error parsing test file: %s' % file)
+            self.containers.append(tuple(line.split()))
+            """if not re.match(line, regex):
+                print(CRED + 'error parsing test file: %s' % file + CEND)
                 sys.exit(1)
             else:
                 self.containers.append(tuple(line.split()))
+"""
