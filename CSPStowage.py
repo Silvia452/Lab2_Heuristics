@@ -1,7 +1,6 @@
 import sys
 from state import State
 from constraint import *
-from defconstraint import ConstraintFunctions
 
 
 class RunProblem:
@@ -10,8 +9,10 @@ class RunProblem:
         self.variables = []
         self.domain = []
         self.state = State()
+        self.pos_floor = []
         self.init_state(arg['layout'], arg['container'])
         self.add_constraints()
+
 
     def init_state(self, file_map, file_container):
         """
@@ -37,6 +38,9 @@ class RunProblem:
                 if self.state.layout[i][j] != 'X':
                     cell = (i, j)
                     self.domain.append(cell)  # => [(0,0), (0,1), (0,2), (1,0) ...]
+                if self.state.layout[i][j] == 'X' and self.state.layout[i][j-1] != 'X':
+                    cell = (i, j)
+                    self.pos_floor.append(cell)
 
         # self.problem.addVariables(self.variables, self.domain)
         for x in self.variables:
@@ -51,20 +55,23 @@ class RunProblem:
                 self.problem.addVariable(x, [d for d in self.domain if self.state.layout[d[0]][d[1]] == 'E'])
 
     def add_constraints(self):
-        c = ConstraintFunctions()
 
         # Constraint 1: not equal cells / container
         self.problem.addConstraint(AllDifferentConstraint())
 
         # Constraint 2: There cannot be a container in a cell whose 'below' cells are empty
-        for x in self.variables:
-            self.problem.addConstraint(self.constraintNotFloatingCell, variables=[x])
+        self.problem.addConstraint(self.max_depth)
+        self.problem.addConstraint(self.check_below)
+
 
         # Constraint 3:  There cannot be a redistribution of cells in Port 1
         for x in self.variables:
             for y in self.variables:
-                if self.state.containers[x][2] == 2 and self.state.containers[y][2] == 1:
-                    self.problem.addConstraint(self.constraintNoRedistribution, variables=[x, y])
+                print(self.state.containers[x][2])
+                if self.state.containers[x][2] == "2" and self.state.containers[y][2] == "1":
+                    print(x)
+                    print(y)
+                    self.problem.addConstraint(self.port_2_first, variables=[y, x])
 
         self.find_solution()
 
@@ -89,6 +96,33 @@ class RunProblem:
                 self.state.layout[cell_x[0]][cell_x[0]] = "C"
                 return True
 
+    def max_depth(self, *container_domain):
+        #[ [(0,0), (0,1), (0,2)],  [(0,1), (0,2), (0,3)]]
+        pos_occupied = []
+        pos_checked = 0
+        for cells in container_domain:
+            if cells[0] not in pos_occupied:
+                pos_occupied.append(cells[0])
+            if cells in self.pos_floor:
+                pos_checked += 1
+        if pos_checked == len(pos_occupied):
+            return True
+        return False
+
+    def check_below(self, *container_domain):
+        cont_floor = []
+        for cells in container_domain:
+            if (cells[0], cells[1]) in container_domain:
+                cont_floor.append(True)
+            elif cells in self.pos_floor:
+                cont_floor.append(True)
+            else:
+                cont_floor.append(False)
+        if False not in cont_floor:
+            return True
+        return False
+
+
     def constraintNoRedistribution(self, cell, cell_y):
         """ - Constraint: There cannot be a redistribution of cells in Port 1:
                             There cannot be a container 'Port2' over container 'Port1'
@@ -105,6 +139,18 @@ class RunProblem:
                     return False
             self.state.layout[cell[0]][cell[1]] = "C"
             return True
+
+    def port_2_first(self, container_port_1_pos: tuple, container_port_2_pos: tuple):
+
+        # see if they are in the same stack
+        if container_port_1_pos[0] == container_port_2_pos[0]:
+            # see if container to port 1 is above
+            if container_port_1_pos[1] < container_port_2_pos[1]:
+                return True
+            # if it is not
+            return False
+        # if they are in different stacks
+        return True
 
 
 def readCommand(argv):
