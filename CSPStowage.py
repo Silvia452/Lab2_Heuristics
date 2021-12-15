@@ -13,7 +13,6 @@ class RunProblem:
         self.init_state(arg['layout'], arg['container'])
         self.add_constraints()
 
-
     def init_state(self, file_map, file_container):
         """
         - The variables will be our containers c : [0, 1, 2, 3, 4, 5, 6, ... , n]
@@ -44,12 +43,12 @@ class RunProblem:
             typeContainer = self.state.containers[x][1]
             #Add domain to standard containers in normal cells
             if typeContainer == "S":
-                self.problem.addVariable(str(x), [d for d in self.domain if self.state.layout[d[0]][d[1]] == 'N'])
+                self.problem.addVariable(x, [d for d in self.domain if self.state.layout[d[0]][d[1]] == 'N'])
 
             # Add domain to refrigerated containers in normal cells
             else:
                 # typeContainer == "R"
-                self.problem.addVariable(str(x), [d for d in self.domain if self.state.layout[d[0]][d[1]] == 'E'])
+                self.problem.addVariable(x, [d for d in self.domain if self.state.layout[d[0]][d[1]] == 'E'])
 
     def add_constraints(self):
         c = ConstraintFunctions()
@@ -59,19 +58,53 @@ class RunProblem:
 
         # Constraint 2: There cannot be a container in a cell whose 'below' cells are empty
         for x in self.variables:
-            self.problem.addConstraint(c.constraintNotFloatingCell, variables=[str(x), self.state.layout, self.variables])
+            self.problem.addConstraint(self.constraintNotFloatingCell, variables=[x])
 
         # Constraint 3:  There cannot be a redistribution of cells in Port 1
         for x in self.variables:
-            if self.state.containers[x][1] == 2:
-                self.problem.addConstraint(
-                    c.constraintNoRedistribution, variables=[str(x), self.state.layout,
-                                                             self.variables, self.state.containers])
+            for y in self.variables:
+                if self.state.containers[x][2] == 2 and self.state.containers[y][2] == 1:
+                    self.problem.addConstraint(self.constraintNoRedistribution, variables=[x, y])
 
-        self.problem.getSolutions()
+        self.find_solution()
 
+    def find_solution(self):
+        solutions = self.problem.getSolutions()
+        # and show them on the standard output
+        print(" #{0} solutions have been found: ".format(len(solutions)))
+        print(solutions)
 
+    def constraintNotFloatingCell(self, cell_x):
+        """Constraint: There cannot be a container in a cell whose 'below' cells are empty
+                 k is the cells with more depth (below) j of (i,j) in stack (column) i
 
+                        To assign to the position x =  (i,j), container c : for all k>j
+                           (i, k) != empty OR (i,k) == 'X' """
+
+        # cell = (i, j) : where container c should be allocated
+        # variables is the list with their values assigned: [(m,n), (m,n), ...]
+        # layout is the map: [ [N, N, N, N], [E, E, E, E], ...]
+        for k in range(cell_x[1], len(self.state.layout)-1):  # iterate through depth
+            if self.state.layout[cell_x[0]][k] in ("X", "C"):
+                self.state.layout[cell_x[0]][cell_x[0]] = "C"
+                return True
+
+    def constraintNoRedistribution(self, cell, cell_y):
+        """ - Constraint: There cannot be a redistribution of cells in Port 1:
+                            There cannot be a container 'Port2' over container 'Port1'
+
+                ***        You cannot assign container c where container[c] == (-, 2) to position (i,j) :
+                            if any (i,k) = c' and container[c'] = (c', -, 1)  for all k>j """
+
+        for k in range(cell[1], len(self.state.layout)-1):  # iterate through depth
+            if self.state.layout[cell[0]][k] in ("X", "C"):
+                self.state.layout[cell[0]][cell[1]] = "C"
+                return True
+            else:
+                if cell_y[0] == cell[0] and cell_y[1] == k:
+                    return False
+            self.state.layout[cell[0]][cell[1]] = "C"
+            return True
 
 
 def readCommand(argv):
