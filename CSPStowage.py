@@ -63,12 +63,11 @@ class RunProblem:
         self.problem.addConstraint(self.max_depth, variables=self.variables)
         self.problem.addConstraint(self.check_below, variables=self.variables)
 
-        """# Constraint 3:  There cannot be a redistribution of cells in Port 1
+        # Constraint 3:  There cannot be a redistribution of cells in Port 1
         for x in self.variables:
             for y in self.variables:
-                print(self.state.containers[x][2])
                 if self.state.containers[x][2] == "2" and self.state.containers[y][2] == "1":
-                    self.problem.addConstraint(self.port_2_first, variables=[y, x])"""
+                    self.problem.addConstraint(self.port_2_first, variables=[y, x])
 
         self.find_solution()
 
@@ -155,9 +154,9 @@ class RunProblem:
     def port_2_first(self, container_port_1_pos: tuple, container_port_2_pos: tuple):
 
         # see if they are in the same stack
-        if container_port_1_pos[0] == container_port_2_pos[0]:
+        if container_port_1_pos[1] == container_port_2_pos[1]:
             # see if container to port 1 is above
-            if container_port_1_pos[1] < container_port_2_pos[1]:
+            if container_port_1_pos[0] < container_port_2_pos[0]:
                 return True
             # if it is not
             return False
