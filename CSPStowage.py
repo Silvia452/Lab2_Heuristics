@@ -54,20 +54,19 @@ class RunProblem:
                 domain = [d for d in self.domain if self.state.layout[d[0]][d[1]] == 'E']
                 self.problem.addVariable(x, domain)
 
-
     def add_constraints(self):
         # Constraint 1: not equal cells / container
         self.problem.addConstraint(AllDifferentConstraint(), variables=self.variables)
 
         # Constraint 2: There cannot be a container in a cell whose 'below' cells are empty
         self.problem.addConstraint(self.max_depth, variables=self.variables)
-        self.problem.addConstraint(self.check_below, variables=self.variables)
+        self.problem.addConstraint(self.constraintNotFloatingCell, variables=self.variables)
 
         # Constraint 3:  There cannot be a redistribution of cells in Port 1
         for x in self.variables:
             for y in self.variables:
                 if self.state.containers[x][2] == "2" and self.state.containers[y][2] == "1":
-                    self.problem.addConstraint(self.port_2_first, variables=[y, x])
+                    self.problem.addConstraint(self.constraintNoRedistribution, variables=[y, x])
 
         self.find_solution()
 
@@ -77,17 +76,6 @@ class RunProblem:
         print(" #{0} solutions have been found: ".format(len(solutions)))
         for i_sol in solutions:
             print(i_sol)
-
-    def constraintNotFloatingCell(self, cell_x):
-
-        # cell = (i, j) : where container c should be allocated
-        # variables is the list with their values assigned: [(m,n), (m,n), ...]
-        # layout is the map: [ [N, N, N, N], [E, E, E, E], ...]
-
-        for k in range(cell_x[1], len(self.state.layout)-1):  # iterate through depth
-            if self.state.layout[cell_x[0]][k] in ("X", "C"):
-                self.state.layout[cell_x[0]][cell_x[0]] = "C"
-                return True
 
     def max_depth(self, *container_domain):
         """ Obtain the maximum depth for each stack:
@@ -115,7 +103,7 @@ class RunProblem:
 
         return False
 
-    def check_below(self, *container_domain):
+    def constraintNotFloatingCell(self, *container_domain):
         """Constraint: There cannot be a container in a cell whose 'below' cells are empty
                  k is the cells with more depth (below) j of (i,j) in stack (column) i
 
@@ -133,30 +121,17 @@ class RunProblem:
             return True
         return False
 
-
-    def constraintNoRedistribution(self, cell, cell_y):
+    def constraintNoRedistribution(self, container_port_1: tuple, container_port_2: tuple):
         """ - Constraint: There cannot be a redistribution of cells in Port 1:
-                            There cannot be a container 'Port2' over container 'Port1'
+                                    There cannot be a container 'Port2' over container 'Port1'
 
-                ***        You cannot assign container c where container[c] == (-, 2) to position (i,j) :
-                            if any (i,k) = c' and container[c'] = (c', -, 1)  for all k>j """
-
-        for k in range(cell[1], len(self.state.layout)-1):  # iterate through depth
-            if self.state.layout[cell[0]][k] in ("X", "C"):
-                self.state.layout[cell[0]][cell[1]] = "C"
-                return True
-            else:
-                if cell_y[0] == cell[0] and cell_y[1] == k:
-                    return False
-            self.state.layout[cell[0]][cell[1]] = "C"
-            return True
-
-    def port_2_first(self, container_port_1_pos: tuple, container_port_2_pos: tuple):
+                        ***        You cannot assign container c where container[c] == (-, 2) to position (i,j) :
+                                    if any (i,k) = c' and container[c'] = (c', -, 1)  for all k>j """
 
         # see if they are in the same stack
-        if container_port_1_pos[1] == container_port_2_pos[1]:
+        if container_port_1[1] == container_port_2[1]:
             # see if container to port 1 is above
-            if container_port_1_pos[0] < container_port_2_pos[0]:
+            if container_port_1[0] < container_port_2[0]:
                 return True
             # if it is not
             return False
