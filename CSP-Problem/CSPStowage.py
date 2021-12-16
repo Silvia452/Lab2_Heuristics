@@ -66,7 +66,7 @@ class RunProblem:
     def find_solution(self):
         solutions = self.problem.getSolutions()
         # and show them on the standard output
-        print(" #{0} solutions have been found: ".format(len(solutions)))
+        print(" #Number of solutions: {0}".format(len(solutions)))
         for i_sol in solutions:
             print(i_sol)
 

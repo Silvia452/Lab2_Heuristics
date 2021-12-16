@@ -1,0 +1,1 @@
+python CSPStowage.py  -p CSP-tests -l map1 -c contenedor1
