@@ -12,16 +12,15 @@ class State:
 
     def init_map(self, file):
         """From file map: (stack, depth)
-                    N N N N     (0,0) (1,0) (2,0) (3,0)
-                    N N N N     (0,1) (1,1) (2,1) (3,1)
-                    E N N E     (0,2) (1,2) (2,2) (3,2)
-                    X E E X     (0,3) (1,3) (2,3) (3,3)
+                    N N N N     (0,0) (0,1) (0,2) (0,3)
+                    N N N N     (1,0) (1,1) (1,2) (1,3)
+                    E N N E     (2,0) (2,1) (2,2) (2,3)
+                    X E E X           (3,1) (3,2)
                     X X X X
         """
 
         with open(file) as handle:
             raw_lines = handle.read().split('\n')
-
         for line in raw_lines:
             regex = r"((N|E|X)\s)*(N|E|X){1}(\n)*"
             self.layout.append(line.split())
@@ -34,6 +33,10 @@ class State:
 
         """Read output:
                 => layout =  [ [N,N,N,N], [N,N,N,N], [E,N,N,E], [X,E,E,X], [X,X,X,X]]
+                layout[0] = [n,n,n,n]
+                layout[2] = [e, n, n, e]
+                layout[2][0] = e => (2,0)
+                layout[2][1] = n
         """
 
     def init_containers(self, file):
