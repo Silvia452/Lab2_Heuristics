@@ -9,8 +9,6 @@ class SearchProblem(object):
     """
     This class outlines the structure of a search problem, but doesn't implement
     any of the methods (in object-oriented terminology: an abstract class).
-
-    Do not change anything in this class, ever.
     """
     def __init__(self, state, goal):
         self.init = state
@@ -35,9 +33,9 @@ class SearchProblem(object):
           state: Search state
 
         For a given state, this should return a
-        list of triples, (successor, action, stepCost), (succ2, acc2, cost2), ...
+        list of triples,[ (successor, action, stepCost), (succ2, acc2, cost2), ... ]
         where 'successor' is a successor to the current state,
-         'action' is the action required to get there,
+         'action' is a legal action required to get there,
          and 'stepCost' is the incremental cost of expanding to that successor.
         """
         pass
@@ -64,7 +62,7 @@ class SearchProblem(object):
 def generalGraphSearch(problem, structure):
     # Push the root node/start into the data structure in this format: [(state, action taken, cost)]
     # The list pushed into the structure for the second node will look something like this:
-    # [(root_state, "No action", 0), (new_state, "Load", 10)]
+    # [(root_state, "No action", 0), (new_state, Action.__str__, Action.cost]
     structure.push([(problem.getStartState(), "No action", 0)])
 
     # Initialise the list of visited nodes to an empty list

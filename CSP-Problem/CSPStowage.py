@@ -126,8 +126,8 @@ def readCommand(argv):
     args = dict()
 
     # Choose a layout map
-    args['layout'] = r'./' + options.path + r'/' + options.layout
-    if args['layout'] is None: raise Exception("The layout " + options.layout + " cannot be found")
+    args['layout'] = r'./' + options.path + r'/' + options.stowage
+    if args['layout'] is None: raise Exception("The layout " + options.stowage + " cannot be found")
 
     # Choose a container list
     args['container'] = r'./' + options.path + r'/' + options.container

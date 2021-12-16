@@ -1,6 +1,25 @@
+"""
+ state.py: contains class of Boat (port_staying, current_stowage),
+                            State (Ports, Boat)
+"""
+
+class Boat(object):
+    def __init__(self, port: int, stowage: list):
+        self.port = port
+        self.stowage = stowage
+
+    def _is_valid(self):
+        if self._notFloating() and self.port in range(3):
+            return True
+        return False
+
+    def _notFloating(self):
+        #TODO: check every container is not floating
+        return True
+
 
 class State:
-    def __init__(self, ports: object, boat: object):
+    def __init__(self, ports: list, boat: object):
         self.ports = ports
         self.boat = boat
 
@@ -9,15 +28,13 @@ class State:
             return True
         return False
 
-    def is_valid(self):
-        self.boat._is_valid()
-
-    def get_Init_Goal(self, file_containers, file_layout):
+    def get_init_goal(self, file_containers, file_layout):
 
         #TODO: obtain containers for port0 from file
         file_containers.open()
         port0 = []
-        initPorts = Ports(port0, [], [])
+
+        initPorts = [port0, [], []]
 
         #TODO: obtain layout of Boat Stowage from file
         file_layout.open()
@@ -29,7 +46,8 @@ class State:
         #TODO: obtain final distribution of ports
         port1 = []
         port2 = []
-        finalPorts = Ports([], port1, port2)
+
+        finalPorts = [[], port1, port2]
 
         #obtain final layout of Boat
         finalBoat = Boat(2, layout0)
@@ -41,25 +59,3 @@ class State:
 
     def get_Final(self):
         return self.FINAL_STATE
-
-
-class Ports (object):
-    def __init__(self, port0=[], port1=[], port2=[]):
-        self.port0 = port0
-        self.port1 = port1
-        self.port2 = port2
-
-
-class Boat(object):
-    def __init__(self, port, layout):
-        self.port = port
-        self.layout = layout
-
-    def _is_valid(self):
-        if _notFloating(self.layout) and self.port in range(3):
-            return True
-        return False
-
-    def _notFloating(self):
-        #TODO: check every container is not floating
-        return True

@@ -5,7 +5,7 @@ from search.search import SearchProblem
 
 class Stowage(SearchProblem):
     def __init__(self, file_containers, file_layout):
-        state = State.get_Init_Goal(file_containers, file_layout)
+        state = State.get_init_goal(file_containers, file_layout)
         initial_state = state.get_Init()
         goal_state = State.get_Final()
         super().__init__(initial_state, goal_state)
@@ -32,7 +32,7 @@ class Stowage(SearchProblem):
         succesors = []
 
         for action in self.getLegalActions(state):
-            newstate = action.applyAction()
+            newstate = action.applyAction(state)
             action = action.__str__()
             stepCost = action.cost
             succesors.append((newstate, action, stepCost))
