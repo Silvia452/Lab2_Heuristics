@@ -9,7 +9,6 @@ class RunProblem:
         self.variables = []
         self.domain = []
         self.state = State()
-        self.pos_floor = []
         self.init_state(arg['layout'], arg['container'])
         self.add_constraints()
 
@@ -31,42 +30,36 @@ class RunProblem:
         # Add variables and domains
         self.variables = range(len(self.state.containers))  # => [0, 1, 2, 3, 4, 5, 6, ... , n]
 
-        #Domain list without X cells (floor)
+        # Domain list without X cells (floor)
         for i in range(len(self.state.layout)):
             for j in range(len(self.state.layout[i])):
                 if self.state.layout[i][j] != 'X':
                     cell = (i, j)
                     self.domain.append(cell)  # => [(0,0), (0,1), (0,2), (1,0) ...]
-                if self.state.layout[i][j] == 'X' and self.state.layout[i-1][j] != 'X':
-                    cell = (i-1, j)
-                    self.pos_floor.append(cell)     # => top floor cells
 
         # self.problem.addVariables(self.variables, self.domain)
         for x in self.variables:
             typeContainer = self.state.containers[x][1]
-            #Add domain to standard containers in normal cells
+            # Add domain to standard containers in normal cells
             if typeContainer == "S":
-                domain = [d for d in self.domain]
-                self.problem.addVariable(x, domain)
+                self.problem.addVariable(x, [d for d in self.domain])
 
             # Add domain to refrigerated containers in normal cells
-            elif typeContainer == "R":
-                domain = [d for d in self.domain if self.state.layout[d[0]][d[1]] == 'E']
-                self.problem.addVariable(x, domain)
+            else:  # typeContainer == "R":
+                self.problem.addVariable(x, [d for d in self.domain if self.state.layout[d[0]][d[1]] == 'E'])
 
     def add_constraints(self):
         # Constraint 1: not equal cells / container
         self.problem.addConstraint(AllDifferentConstraint(), variables=self.variables)
 
         # Constraint 2: There cannot be a container in a cell whose 'below' cells are empty
-        self.problem.addConstraint(self.max_depth, variables=self.variables)
         self.problem.addConstraint(self.constraintNotFloatingCell, variables=self.variables)
 
         # Constraint 3:  There cannot be a redistribution of cells in Port 1
         for x in self.variables:
             for y in self.variables:
                 if self.state.containers[x][2] == "2" and self.state.containers[y][2] == "1":
-                    self.problem.addConstraint(self.constraintNoRedistribution, variables=[y, x])
+                    self.problem.addConstraint(self.constraintNoRedistribution, variables=[x, y])
 
         self.find_solution()
 
@@ -77,51 +70,18 @@ class RunProblem:
         for i_sol in solutions:
             print(i_sol)
 
-    def max_depth(self, *container_domain):
-        """ Obtain the maximum depth for each stack:
-                - Floor
-                - Container
-            var1 : [(0,0), (0,1), (0,2)]
-            var2 : [(0,1), (0,2), (0,3)]
-        """
-
-        #list for each stack (column)
-        pos_occupied = []
-        #iterator so as to check all columns
-        pos_checked = 0
-
-        for cell in container_domain:
-            if cell[1] not in pos_occupied:
-                #add to list '5' columns --> 5 numbers ; list = [0,1,2,3,4]
-                pos_occupied.append(cell[1])
-            if cell in self.pos_floor:
-                #once a floor is found, counter + 1 ; 'final counter' = 5
-                pos_checked += 1
-        #checked every column and floor
-        if pos_checked == len(pos_occupied):
-            return True
-
-        return False
-
     def constraintNotFloatingCell(self, *container_domain):
         """Constraint: There cannot be a container in a cell whose 'below' cells are empty
-                 k is the cells with more depth (below) j of (i,j) in stack (column) i
-
-                        To assign to the position x =  (i,j), container c : for all k>j
+                    To assign to the position x =  (i,j), container c : for all k>j
                            (i, k) != empty OR (i,k) == 'X' """
-        cont_floor = []
-        for cell in container_domain:
-            if (cell[0]+1, cell[1]) in container_domain:
-                cont_floor.append(True)
-            elif cell in self.pos_floor:
-                cont_floor.append(True)
-            else:
-                cont_floor.append(False)
-        if False not in cont_floor:
-            return True
-        return False
 
-    def constraintNoRedistribution(self, container_port_1: tuple, container_port_2: tuple):
+        for cell in container_domain:
+            cell_bellow = (cell[0], cell[1] + 1)
+            if cell_bellow not in container_domain and self.state.layout[cell_bellow[0]][cell_bellow[1]] != 'X':
+                return False
+        return True
+
+    def constraintNoRedistribution(self, container_port_2: tuple, container_port_1: tuple):
         """ - Constraint: There cannot be a redistribution of cells in Port 1:
                                     There cannot be a container 'Port2' over container 'Port1'
 
@@ -129,13 +89,11 @@ class RunProblem:
                                     if any (i,k) = c' and container[c'] = (c', -, 1)  for all k>j """
 
         # see if they are in the same stack
-        if container_port_1[1] == container_port_2[1]:
+        if container_port_1[0] == container_port_2[0]:
             # see if container to port 1 is above
-            if container_port_1[0] < container_port_2[0]:
+            if container_port_1[1] < container_port_2[1]:
                 return True
-            # if it is not
             return False
-        # if they are in different stacks
         return True
 
 
