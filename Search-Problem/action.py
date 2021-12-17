@@ -44,38 +44,34 @@ class Load(Action):
         super().__init__(self.port, self.container, self.cell)
 
     def applyAction(self, state):
-        #TODO: make changes in state(port, boat) with init data: port-cont, stowage+cont
+
         state.boat.stowage[self.cell[0]][self.cell[1]] = self.container
         state.port[self.port].remove(self.container)
 
         return state
 
     def isLegal(self, state):
-        #TODO: check preconditions: Cell is Empty, State.Boat.notfloating, boat_port, special_cell, cont_port
-
-
-        #proving that the cell we want to load is not floating
+        #Proving that the cell we want to load is not floating
         if not state.boat._notFloating():
             return False
 
-        #proving that we can insert the container in the Standard or Refrigerated
+        #Proving that we can insert the container in the Standard or Refrigerated
         if not state.boat.stowage[self.cell[0]][self.cell[1]] in ('N', 'E'):
             return False
 
-        #boat_port
+        #Check that the boat is in the port
         if self.port != state.boat.port:
             return False
 
-        #special_cell
+        #Checking that if the container is energy needs to go into the refrigerated
         if self.container[1] == 'E' and state.boat.stowage[self.cell[0]][self.cell[1]] != 'E':
             return False
 
-        #cont_port
+        #Checking that the container we want to load is in the port
         if self.container not in state.ports[self.port]:
             return False
 
         return True
-
 
 
     def costAction(self):
