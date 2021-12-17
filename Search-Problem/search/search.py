@@ -2,8 +2,7 @@
 search.py: generic search algorithms
 """
 from builtins import object
-import util
-
+from util import PriorityQueueWithFunction
 
 class SearchProblem(object):
     """
@@ -14,7 +13,7 @@ class SearchProblem(object):
         self.init = state
         self.goal = goal
 
-    def getState(self):
+    def getStartState(self):
         """
         Returns the start state for the search problem.
         """
@@ -57,7 +56,6 @@ class SearchProblem(object):
                 possibly implement.
                 """
         pass
-
 
 def generalGraphSearch(problem, structure):
     # Push the root node/start into the data structure in this format: [(state, action taken, cost)]
@@ -102,7 +100,6 @@ def generalGraphSearch(problem, structure):
     # If search fails, return False
     return False
 
-
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
 
@@ -113,7 +110,7 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     h = lambda path: heuristic(path[-1][0], problem)
 
     # Construct an empty priority queue that sorts using f(x) and breaks ties by h(x)
-    pq = util.PriorityQueueWithFunction((f, h))
+    pq = PriorityQueueWithFunction((f, h))
 
     # A* is general graph search with the PriorityQueue sorting by the f(x) as the data structure
     return generalGraphSearch(problem, pq)

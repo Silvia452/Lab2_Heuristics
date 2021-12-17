@@ -1,6 +1,8 @@
+#!/bin/bash
+import os
 import sys
-from state import State
 from constraint import *
+from file_constants import Constant
 
 
 class RunProblem:
@@ -8,7 +10,6 @@ class RunProblem:
         self.problem = Problem()
         self.variables = []
         self.domain = []
-        self.state = State()
         self.init_state(arg['layout'], arg['container'])
         self.add_constraints()
 
@@ -22,31 +23,31 @@ class RunProblem:
         """
 
         # Obtain list of cells (layout map)
-        self.state.init_map(file_map)
+        self.layout = Constant.init_map(file_map)
 
         # Obtain list of containers
-        self.state.init_containers(file_container)
+        self.containers = Constant.init_containers(file_container)
 
         # Add variables and domains
-        self.variables = range(len(self.state.containers))  # => [0, 1, 2, 3, 4, 5, 6, ... , n]
+        self.variables = range(len(self.containers))  # => [0, 1, 2, 3, 4, 5, 6, ... , n]
 
         # Domain list without X cells (floor)
-        for i in range(len(self.state.layout)):
-            for j in range(len(self.state.layout[i])):
-                if self.state.layout[i][j] != 'X':
+        for i in range(len(self.layout)):
+            for j in range(len(self.layout[i])):
+                if self.layout[i][j] != 'X':
                     cell = (i, j)
                     self.domain.append(cell)  # => [(0,0), (0,1), (0,2), (1,0) ...]
 
         # self.problem.addVariables(self.variables, self.domain)
         for x in self.variables:
-            typeContainer = self.state.containers[x][1]
+            typeContainer = self.containers[x][1]
             # Add domain to standard containers in normal cells
             if typeContainer == "S":
                 self.problem.addVariable(x, [d for d in self.domain])
 
             # Add domain to refrigerated containers in normal cells
             else:  # typeContainer == "R":
-                self.problem.addVariable(x, [d for d in self.domain if self.state.layout[d[0]][d[1]] == 'E'])
+                self.problem.addVariable(x, [d for d in self.domain if self.layout[d[0]][d[1]] == 'E'])
 
     def add_constraints(self):
         # Constraint 1: not equal cells / container
@@ -58,7 +59,7 @@ class RunProblem:
         # Constraint 3:  There cannot be a redistribution of cells in Port 1
         for x in self.variables:
             for y in self.variables:
-                if self.state.containers[x][2] == "2" and self.state.containers[y][2] == "1":
+                if self.containers[x][2] == "2" and self.containers[y][2] == "1":
                     self.problem.addConstraint(self.constraintNoRedistribution, variables=[x, y])
 
         self.find_solution()
@@ -77,7 +78,7 @@ class RunProblem:
 
         for cell in container_domain:
             cell_bellow = (cell[0], cell[1] + 1)
-            if cell_bellow not in container_domain and self.state.layout[cell_bellow[0]][cell_bellow[1]] != 'X':
+            if cell_bellow not in container_domain and self.layout[cell_bellow[0]][cell_bellow[1]] != 'X':
                 return False
         return True
 
@@ -97,44 +98,20 @@ class RunProblem:
         return True
 
 
-def readCommand(argv):
-    """
-    Processes the command used to run stowage from the command line.
-    """
-    from optparse import OptionParser
+def main(path, layout, container):
+
     usageStr = """
     USAGE:      python python CSPStowage.py -p <path> -l <map> -c <containers>
     EXAMPLES:   (1) python python CSPStowage.py -p CSP-tests -l map1 -c contenedores1
     """
-    parser = OptionParser(usageStr)
-
-    # -p <path> -l <map> -c <containers>
-    parser.add_option('-p', '--path', dest='path',
-                      help='the PATH to test files: map and containers',
-                      metavar='PATH', default="CSP-tests")
-    parser.add_option('-l', '--layout', dest='layout',
-                      help='the MAP_FILE from which to load the map layout',
-                      metavar='LAYOUT_FILE')
-    parser.add_option('-c', '--container', dest='container',
-                      help='the CONTAINER_FILE from which to load the list of containers and their types',
-                      metavar='CONTAINERS_FILE')
-
-    options, otherjunk = parser.parse_args(argv)
-    if len(otherjunk) != 0:
-        raise Exception('Command line input not understood: ' + str(otherjunk))
-
-    args = dict()
-
-    # Choose a layout map
-    args['layout'] = r'./CSP-Problem/' + options.path + r'/' + options.layout
-    if args['layout'] is None: raise Exception("The layout " + options.layout + " cannot be found")
+    map = os.getcwd() + r'/' + path + r'/' + layout
+    if map is None: raise Exception("The layout " + layout + " cannot be found")
 
     # Choose a container list
-    args['container'] = r'./CSP-Problem/' + options.path + r'/' + options.container
-    if args['container'] is None: raise Exception("The container list " + options.container + "cannot be found")
+    cont = os.getcwd() + r'/' + path + r'/' + container
+    if cont is None: raise Exception("The container list " + container + "cannot be found")
 
-    return args
-
+    RunProblem(layout=map, container=cont)
 
 if __name__ == '__main__':
     """
@@ -144,7 +121,5 @@ if __name__ == '__main__':
     > python CSPStowage.py <options>
 
     """
-    args = readCommand(sys.argv[1:])  # Get game components based on input
-    RunProblem(**args)
-
-    pass
+    print('in')
+    main(sys.argv[1], sys.argv[2], sys.argv[3])

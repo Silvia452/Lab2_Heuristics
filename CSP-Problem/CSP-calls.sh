@@ -1,1 +1,1 @@
-python CSPStowage.py  -p CSP-tests -l map1 -c contenedor1
+python CSPStowage.py CSP-tests map1 container1

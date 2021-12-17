@@ -5,12 +5,10 @@ CRED = '\033[91m'
 CEND = '\033[0m'
 
 
-class State:
-    def __init__(self):
-        self.layout = []
-        self.containers = []
+class Constant:
 
-    def init_map(self, file):
+    @staticmethod
+    def init_map(file):
         """From file map: (stack, depth)
                     N N N N     (0,0) (1,0) (2,0) (3,0)
                     N N N N     (0,1) (1,1) (1,2) (3,1)
@@ -18,12 +16,12 @@ class State:
                     X E E X           (1,3) (2,3)
                     X X X X
         """
-
+        layout = []
         with open(file) as handle:
             raw_lines = handle.read().split('\n')
 
         for n in range(len(raw_lines[0].split())):
-            self.layout.append([])
+            layout.append([])
 
         for line in raw_lines:
             regex = r"((N|E|X)\s)*(N|E|X){1}(\n)*"
@@ -36,7 +34,7 @@ class State:
                     print(CRED + 'error parsing test file: %s' % file + CEND)
                     sys.exit(1)
                 else:
-                    self.layout[n].append(line_list[n])
+                    layout[n].append(line_list[n])
         """Read output:
                 => layout =  [  ['N', 'N', 'E', 'X', 'X'], 
                                 ['N', 'N', 'N', 'E', 'X'],
@@ -45,8 +43,11 @@ class State:
                             ]
 
         """
+        _LIST_LAYOUT_ = layout
+        return layout
 
-    def init_containers(self, file):
+    @staticmethod
+    def init_containers(file):
         """
         From file containers:
             1 S 1
@@ -60,7 +61,7 @@ class State:
 
             containers[i] = "i"
         """
-
+        containers = []
         with open(file) as handle:
             raw_lines = handle.read().split('\n')
 
@@ -71,5 +72,6 @@ class State:
                 print(CRED + 'error parsing test file: %s' % file + CEND)
                 sys.exit(1)
             else:
-                self.containers.append(tuple(line.split()))
+                containers.append(tuple(line.split()))
 
+        return containers
