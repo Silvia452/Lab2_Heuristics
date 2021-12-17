@@ -104,7 +104,7 @@ def readCommand(argv):
     from optparse import OptionParser
     usageStr = """
     USAGE:      python python CSPStowage.py -p <path> -l <map> -c <containers>
-    EXAMPLES:   (1) python python CSPStowage.py -p CSP-tests -l mapa1 -c contenedores1
+    EXAMPLES:   (1) python python CSPStowage.py -p CSP-tests -l map1 -c contenedores1
     """
     parser = OptionParser(usageStr)
 
@@ -126,11 +126,11 @@ def readCommand(argv):
     args = dict()
 
     # Choose a layout map
-    args['layout'] = r'./' + options.path + r'/' + options.stowage
-    if args['layout'] is None: raise Exception("The layout " + options.stowage + " cannot be found")
+    args['layout'] = r'./CSP-Problem/' + options.path + r'/' + options.layout
+    if args['layout'] is None: raise Exception("The layout " + options.layout + " cannot be found")
 
     # Choose a container list
-    args['container'] = r'./' + options.path + r'/' + options.container
+    args['container'] = r'./CSP-Problem/' + options.path + r'/' + options.container
     if args['container'] is None: raise Exception("The container list " + options.container + "cannot be found")
 
     return args

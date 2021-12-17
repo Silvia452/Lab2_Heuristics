@@ -53,7 +53,6 @@ class Load(Action):
     def isLegal(self, state):
         #TODO: check preconditions: Cell is Empty, State.Boat.notfloating, boat_port, special_cell, cont_port
 
-
         #proving that the cell we want to load is not floating
         if not state.boat._notFloating():
             return False
@@ -75,8 +74,6 @@ class Load(Action):
             return False
 
         return True
-
-
 
     def costAction(self):
         return 10 + self.cell[1]

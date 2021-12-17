@@ -31,14 +31,12 @@ class State:
             line_list = line.split()  # => [N,N,N,N]
 
             for n in range(len(line_list)):
-                self.layout[n].append(line_list[n])
-
-            """ if re.match(line, regex) is None:
-                print(line)
-                print(CRED + 'error parsing test file: %s' % file + CEND)
-                sys.exit(1)
-            else:
-                self.layout.append(line.split())"""
+                if re.match(regex, line_list[n]) is None:
+                    print(line_list[n])
+                    print(CRED + 'error parsing test file: %s' % file + CEND)
+                    sys.exit(1)
+                else:
+                    self.layout[n].append(line_list[n])
         """Read output:
                 => layout =  [  ['N', 'N', 'E', 'X', 'X'], 
                                 ['N', 'N', 'N', 'E', 'X'],
@@ -68,10 +66,10 @@ class State:
 
         for line in raw_lines:
             regex = r"\d+ (S|R) (1|2)\n?"
-            self.containers.append(tuple(line.split()))
-            """if not re.match(line, regex):
+
+            if not re.match(regex, line):
                 print(CRED + 'error parsing test file: %s' % file + CEND)
                 sys.exit(1)
             else:
                 self.containers.append(tuple(line.split()))
-"""
+
