@@ -18,14 +18,13 @@ class Boat(object):
 
     def _notFloating(self):
         # check every container is not floating
-        depth = len(self.stowage[0])
         stack = len(self.stowage)
 
         for s in range(stack):
-            stack_str = ' '.join([c if type(c) == str else c[0] for c in self.stowage[s]])
-            if re.match("" , stack_str):
+            stack_str = ''.join([c if type(c) == str else c[0] for c in self.stowage[s]])
+            regex = r'(N|E)*\d*X+'
+            if not re.fullmatch(regex , stack_str):
                 return False
-
         return True
 
 
