@@ -21,24 +21,23 @@ class Sail(Action):
         super().__init__(self.port_init, self.port_final)
 
     def applyAction(self, state):
-        # TODO: make changes in state(port, boat) with init data
-        #state.boat.port = self.port_final
-        pass
+        #make changes in boat port position
+        state.boat.port = self.port_final
+        return state
 
     def isLegal(self, state):
-        #TODO: check preconditions: boat_port
-        pass
+        #check preconditions: boat in port_origin
+        return state.boat.port == self.port_init
 
     def costAction(self):
-        #TODO
-        pass
+        return 3500
 
     def __str__(self):
         return "Sail ( Origin: {0}, Destination: {1})".format(self.port_init, self.port_final)
 
 
 class Load(Action):
-    def __init__(self, port: int, c: int, cell: tuple):
+    def __init__(self, port: int, c: tuple, cell: tuple):
         self.port = port
         self.container = c
         self.cell = cell
@@ -63,23 +62,40 @@ class Load(Action):
 
 
 class Unload(Action):
-    def __init__(self, port: int, c: int, cell: tuple):
+    def __init__(self, port: int, c: tuple, cell: tuple):
         self.port = port
         self.container = c
         self.cell = cell
         super().__init__(self.port, self.container, self.cell)
 
     def applyAction(self, state):
-        # TODO: make changes in state(port, boat) with init data: stowage-cont, port + cont
-        pass
+        # make changes in state(port, boat) with init data: stowage-cont, port + cont
+        state.port[self.port].append(self.container)
+        state.boat.stowage[self.cell[0]][self.cell[1]] = state.boat.layout[self.cell[0]][self.cell[1]]
+        return state
 
     def isLegal(self, state):
-        #TODO: check preconditions: cell_top_empty, boat_port, Exists_cont_cell
-        pass
+        #check preconditions: cell_top_empty, boat_port, Exists_cont_cell
+        depth = self.cell[1]
+        stack = self.cell[0]
+
+        #check that there is no container over the one to unload
+        for k in range(depth):
+            if state.boat.stowage[stack][k] not in ('N', 'E'):
+                return False
+
+        #Check that the boat is in the port
+        if self.port != state.boat.port:
+            return False
+
+        #Check that the Container to extract is in the cell specified
+        if state.boat.stowage[stack][depth] != self.container:
+            return False
+
+        return True
 
     def costAction(self):
-        #TODO
-        pass
+        return 15 + 2*self.cell[1]
 
     def __str__(self):
         return "Unload (Port: {0}, Container: {1}, Cell: {2})".format(self.port, self.container, self.cell)

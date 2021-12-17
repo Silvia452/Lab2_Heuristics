@@ -7,6 +7,7 @@ class Boat(object):
     def __init__(self, port: int, stowage: list):
         self.port = port
         self.stowage = stowage
+        self.layout = stowage
 
     def _is_valid(self):
         if self._notFloating() and self.port in range(3):
@@ -20,7 +21,7 @@ class Boat(object):
 
 class State:
     def __init__(self, ports: list, boat: object):
-        self.ports = ports
+        self.ports = ports  #container = (id, type, port_destination)
         self.boat = boat
 
     def is_goal(self):

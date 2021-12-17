@@ -7,7 +7,7 @@ class Stowage(SearchProblem):
     def __init__(self, file_containers, file_layout):
         state = State.get_init_goal(file_containers, file_layout)
         initial_state = state.get_Init()
-        goal_state = State.get_Final()
+        goal_state = state.get_Final()
         super().__init__(initial_state, goal_state)
 
     def getLegalActions(self, state):
