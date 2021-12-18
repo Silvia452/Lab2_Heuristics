@@ -71,17 +71,17 @@ class State:
         port1 = []
         port2 = []
         for c in port0:
-            if c[2] == 1:
+            if c[2] == '1':
                 port1.append(c)
-            elif c[2] == 2:
+            elif c[2] == '2':
                 port2.append(c)
 
         finalPorts = [[], port1, port2]
 
         #obtain final layout of Boat
         finalBoat = Boat(2, layout0)
-
         self.FINAL_STATE = (finalPorts, finalBoat)
+
         self.port0 = port0
         self.layout0 = layout0
 

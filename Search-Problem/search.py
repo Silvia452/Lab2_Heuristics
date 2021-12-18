@@ -1,6 +1,7 @@
 """
 search.py: generic search algorithms
 """
+import os
 from builtins import object
 from util import PriorityQueueWithFunction
 
@@ -12,6 +13,9 @@ class SearchProblem(object):
     def __init__(self, state, goal):
         self.init = state
         self.goal = goal
+
+    def getGoalState(self):
+        return self.goal
 
     def getStartState(self):
         """
@@ -62,10 +66,10 @@ def generalGraphSearch(problem, structure):
     # The list pushed into the structure for the second node will look something like this:
     # [(root_state, "No action", 0), (new_state, Action.__str__, Action.cost]
     structure.push([(problem.getStartState(), "No action", 0)])
-
+    print('Initial State: {}'.format(problem.getStartState()))
+    print('Goal State: {}'.format(problem.getGoalState()))
     # Initialise the list of visited nodes to an empty list
     visited = []
-    print(visited)
 
     #cost=0
     #expanded_nodes = 0
@@ -90,9 +94,11 @@ def generalGraphSearch(problem, structure):
 
             #expanded_nodes+=1
             #successor states
+
             for successor in problem.getSuccessors(curr_state):
 
                 if successor[0] not in visited:
+                    print(successor[0])
                     # Copy the parent's path
                     successorPath = path[:]
                     # Set the path of the successor node to the parent's path + the successor node

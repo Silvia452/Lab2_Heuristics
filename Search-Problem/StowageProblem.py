@@ -1,3 +1,5 @@
+import re
+
 from state import State
 from action import Load, Sail, Unload
 from search import SearchProblem
@@ -47,6 +49,7 @@ class StowageProblem(SearchProblem):
 
         for action in all_action:
             if action.isLegal(state):
+                print(action)
                 valid_actions.append(action)
 
         return valid_actions
@@ -63,12 +66,24 @@ class StowageProblem(SearchProblem):
         return succesors
 
     def getCostOfActions(self, actions):
-        #TODO
         #'Sail (Origin: 0, Destination: 1)'
+        #'Load (Port: 0, Container: 0, Cell: (0,0))'
         totalCost = []
+        sail = r'Sail: \(Origin: (\d+), Destination: (\d+)\)'
+        load = r'Load: \(Port: (\d+), Container: (\d+), Cell: \((\d+),(\d+)\)\)'
+        unload = r'Unload: \(Port: (\d+), Container: (\d+), Cell: \((\d+),(\d+)\)\)'
         for action in actions:
-                name = r'(\w): \('
+            args = re.findall(r'\d+', action)
+            if re.match('Sail', action):
+                action = Sail(int(args[0]), int(args[1])).costAction()
 
+            else:
+                container = self.containers[int(args[1])]
+                cell = (int(args[2]), int(args[3]))
+                if re.match('Load', action):
+                    action = Load(args[0], container, cell).costAction()
+                elif re.match('Unload', action):
+                    action = Load(args[0], container, cell).costAction()
         return sum(totalCost)
 
     def getEstimation2Boats(self, state):

@@ -46,10 +46,12 @@ class Load(Action):
         self.cell = cell
 
     def applyAction(self, state):
-        #make changes in state(port, boat) with init data: port-cont, stowage+cont
+        #make changes in state(port, boat) with init data: port-cont, stowage+
+
         new_state = copy.deepcopy(state)
         new_state[1].stowage[self.cell[0]][self.cell[1]] = self.container
         new_state[0][self.port].remove(self.container)
+
         return new_state
 
     def isLegal(self, state):
@@ -82,7 +84,7 @@ class Load(Action):
         return 10 + self.cell[1]
 
     def __str__(self):
-        return "Load (Port: {0}, Container: {1}, Cell: {2})".format(self.port, self.container, self.cell)
+        return "Load (Port: {0}, Container: {1}, Cell: {2})".format(self.port, self.container[0], self.cell)
 
 
 class Unload(Action):
@@ -93,6 +95,7 @@ class Unload(Action):
 
     def applyAction(self, state):
         # make changes in state(port, boat) with init data: stowage-cont, port + cont
+        print('Unload: {}'.format(self.port))
         new_state = copy.deepcopy(state)
         new_state[0][self.port].append(self.container)
         new_state[1].stowage[self.cell[0]][self.cell[1]] = new_state[1].layout[self.cell[0]][self.cell[1]]
@@ -122,5 +125,5 @@ class Unload(Action):
         return 15 + 2*self.cell[1]
 
     def __str__(self):
-        return "Unload (Port: {0}, Container: {1}, Cell: {2})".format(self.port, self.container, self.cell)
+        return "Unload (Port: {0}, Container: {1}, Cell: {2})".format(self.port, self.container[0], self.cell)
 
