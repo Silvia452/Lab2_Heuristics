@@ -117,7 +117,9 @@ def aStarSearch(problem, heuristic):
     # where state = path[-1][0], which is the first element in the last tuple of the path
 
     f = lambda path: problem.getCostOfActions([x[1] for x in path][1:]) + heuristic(problem, path[-1][0])
+    print('Hwllo')
     h = lambda path: heuristic(problem, path[-1][0])
+    print('Aws')
 
     # Construct an empty priority queue that sorts using f(x) and breaks ties by h(x)
     pq = PriorityQueueWithFunction((f, h))

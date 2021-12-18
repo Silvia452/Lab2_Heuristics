@@ -29,15 +29,15 @@ def main(path, layout, container, heur):
     heuristic = getattr(StowageProblem, heur)
 
     # Find Solution Path
+    # def actions(prob)
     actions = lambda prob : aStarSearch(problem, heuristic=heuristic)
-
+    solution, nodes = actions(problem)
     #Obtain Solution Statistics
-    totalCost = problem.getCostOfActions(actions(problem)[0])
-    print('Actions:')
-    for act in actions(problem):
-        print('\t{}'.format(act))
-
-    print('Solution found with: \n\texpanded nodes: %d\n\ttotal cost of %d \n\tin %.5f seconds' % (actions(problem)[1], totalCost, time.time() - starttime))
+    totalCost = problem.getCostOfActions(solution)
+    print('Solution Path:')
+    for step in solution:
+        print('\t{}'.format(step))
+    print('Solution Statistic: \n\tExpanded nodes: %d\n\tTotal cost of %d \n\tTime: %.5f seconds' % (nodes, totalCost, time.time() - starttime))
 
 
 if __name__ == '__main__':

@@ -55,13 +55,12 @@ class StowageProblem(SearchProblem):
 
     def getSuccessors(self, state):
         succesors = []
-
         for action in self.getLegalActions(state):
             newstate = action.applyAction(state)
             str_action = action.__str__()
             stepCost = action.costAction()
             succesors.append((newstate, str_action, stepCost))
-        # print('\nFor State: P:{}, B:{}\t{}'.format(state[0], state[1].port, state[1].stowage))
+
         return succesors
 
     def getCostOfActions(self, actions):
