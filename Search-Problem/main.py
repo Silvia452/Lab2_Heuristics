@@ -21,16 +21,23 @@ def main(path, layout, container, heur):
 
     #Start running time
     starttime = time.time()
+
     # Make new Problem data
     problem = StowageProblem(file_containers, file_map)
+
     # Obtain heuristic method
     heuristic = getattr(StowageProblem, heur)
+
     # Find Solution Path
     actions = lambda prob : aStarSearch(problem, heuristic=heuristic)
-    #Obtain cost from actions
-    print(actions)
-    totalCost = problem.getCostOfActions(actions(problem))
-    print('Solution found with total cost of %d in %.5f seconds' % (totalCost, time.time() - starttime))
+
+    #Obtain Solution Statistics
+    totalCost = problem.getCostOfActions(actions(problem)[0])
+    print('Actions:')
+    for act in actions(problem):
+        print('\t{}'.format(act))
+
+    print('Solution found with: \n\texpanded nodes: %d\n\ttotal cost of %d \n\tin %.5f seconds' % (actions(problem)[1], totalCost, time.time() - starttime))
 
 
 if __name__ == '__main__':

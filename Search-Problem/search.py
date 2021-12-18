@@ -65,18 +65,16 @@ def generalGraphSearch(problem, structure):
     # Push the root node/start into the data structure in this format: [(state, action taken, cost)]
     # The list pushed into the structure for the second node will look something like this:
     # [(root_state, "No action", 0), (new_state, Action.__str__, Action.cost]
-    print('_'*20)
+    print('_'*50)
     print()
     structure.push([(problem.getStartState(), "No action", 0)])
     initstate = problem.getStartState()
     goalstate = problem.getGoalState()
-    print('Initial State: P:{}, B:{}\t{}'.format(initstate[0][0], initstate[1].port, initstate[1].stowage))
-    print('Goal State: P:{}, B:{}\t{}'.format(goalstate[0], goalstate[1].port, goalstate[1].stowage))
+    print('Initial State: P:{}, B:{}\t{}'.format(initstate.ports, initstate.boat.port, initstate.boat.stowage))
+    print('Goal State: P:{}, B:{}'.format(goalstate[0].ports, goalstate[0].boat.stowage))
 
     # Initialise the list of visited nodes to an empty list
     visited = []
-
-    #cost=0
     expanded_nodes = 0
 
     # While the structure is not empty, i.e. there are still elements to be searched,
@@ -91,20 +89,17 @@ def generalGraphSearch(problem, structure):
         if problem.isGoalState(curr_state):
             # return the actions to the goal state
             # which is the second element for each tuple in the path, ignoring the first "Stop"
-            return [x[1] for x in path][1:]
+            return [x[1] for x in path][1:], expanded_nodes
 
         if curr_state not in visited:
             # mark the current state as visited by appending to the visited list
             visited.append(curr_state)
 
-            expanded_nodes+=1
+            expanded_nodes += 1
             #successor states
             for successor in problem.getSuccessors(curr_state):
 
                 if successor[0] not in visited:
-                    #print('Action: {}\tSuccessor: Ports: {}, Boat:  {}, {}'.format(
-                     #   successor[1], successor[0][0], successor[0][1].port, successor[0][1].stowage))
-
                     # Copy the parent's path
                     successorPath = path[:]
                     # Set the path of the successor node to the parent's path + the successor node

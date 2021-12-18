@@ -15,7 +15,6 @@ class StowageProblem(SearchProblem):
         self.containers = state.get_all_containers()
         self.layout = state.get_layout()
 
-
     def getLegalActions(self, state):
         all_actions = self.get_all_actions()
         return self.get_valid_actions(state, all_actions)
@@ -25,13 +24,13 @@ class StowageProblem(SearchProblem):
                     Sail(cost, port_init, port_final)
                     Unload(cost, port, c, cell)"""
 
-        #sail
+        # sail
         all_act = [Sail(0, 1), Sail(1, 2)]
-        #load/unload from port 0/1/2
+        # load/unload from port 0/1/2
         for p in range(2):
-            #obtain tuples of containers
+            # obtain tuples of containers
             for cont in self.containers:
-                #obtain each cell of boat stowage
+                # obtain each cell of boat stowage
                 for cell_x in range(len(self.layout)):
                     for cell_y in range(len(self.layout[cell_x])):
                         all_act.append(Load(p, cont, (cell_x, cell_y)))
@@ -62,12 +61,12 @@ class StowageProblem(SearchProblem):
             str_action = action.__str__()
             stepCost = action.costAction()
             succesors.append((newstate, str_action, stepCost))
-        #print('\nFor State: P:{}, B:{}\t{}'.format(state[0], state[1].port, state[1].stowage))
+        # print('\nFor State: P:{}, B:{}\t{}'.format(state[0], state[1].port, state[1].stowage))
         return succesors
 
     def getCostOfActions(self, actions):
-        #'Sail (Origin: 0, Destination: 1)'
-        #'Load (Port: 0, Container: 0, Cell: (0,0))'
+        # 'Sail (Origin: 0, Destination: 1)'
+        # 'Load (Port: 0, Container: 0, Cell: (0,0))'
         totalCost = []
         sail = r'Sail: \(Origin: (\d+), Destination: (\d+)\)'
         load = r'Load: \(Port: (\d+), Container: (\d+), Cell: \((\d+),(\d+)\)\)'
@@ -86,9 +85,13 @@ class StowageProblem(SearchProblem):
         return sum(totalCost)
 
     def isGoalState(self, state):
-        #print('\nFor State: P:{}, B:{}\t{}'.format(state[0], state[1].port, state[1].stowage))
-        #print('Goal State: P:{}, B:{}\t{}'.format(self.goal[0], self.goal[1].port, self.goal[1].stowage))
-        return self.goal[0] == state[0] and self.goal[1].port == state[1].port and self.goal[1].stowage == state[1].stowage
+        # print('\nFor State: P:{}, B:{}\t{}'.format(state[0], state[1].port, state[1].stowage))
+        # print('Goal State: P:{}, B:{}\t{}'.format(self.goal[0], self.goal[1].port, self.goal[1].stowage))
+        for goal in self.goal:
+            if goal.ports == state.ports and goal.boat.port == state.boat.port \
+                    and goal.boat.stowage == state.boat.stowage:
+                return True
+        return False
 
     def getEstimation2Boats(self, state):
         """
@@ -103,9 +106,9 @@ class StowageProblem(SearchProblem):
         loadCost = 10
         unloadCost = 15
         sailCost = 35
-        estimate = (loadCost + unloadCost)*len(state[0][0])
-        estimate += unloadCost * state[1].get_container_stowage()
-        if state[1].port == 0:
+        estimate = (loadCost + unloadCost) * len(state.ports[0])
+        estimate += unloadCost * state.boat.get_container_stowage()
+        if state.boat.port == 0:
             estimate += 2 * sailCost
         return estimate
 
@@ -113,11 +116,3 @@ class StowageProblem(SearchProblem):
         loadCost = 10
         unloadCost = 15
         sailCost = 35
-
-
-
-
-
-
-
-

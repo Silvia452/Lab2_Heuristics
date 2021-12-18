@@ -25,12 +25,12 @@ class Sail(Action):
     def applyAction(self, state):
         #make changes in boat port position
         new_state = copy.deepcopy(state)
-        new_state[1].port = self.port_final
+        new_state.boat.port = self.port_final
         return new_state
 
     def isLegal(self, state):
         #check preconditions: boat in port_origin
-        return state[1].port == self.port_init
+        return state.boat.port == self.port_init
 
     def costAction(self):
         return 3500
@@ -50,7 +50,7 @@ class Load(Action):
 
         new_state = copy.deepcopy(state)
         new_state.boat.stowage[self.cell[0]][self.cell[1]] = self.container
-        new_state.port[self.port].remove(self.container)
+        new_state.ports[self.port].remove(self.container)
 
         return new_state
 
@@ -71,11 +71,11 @@ class Load(Action):
             return False
 
         #Checking that if the container is energy needs to go into the refrigerated
-        if self.container[1] == 'E' and state[0].stowage[self.cell[0]][self.cell[1]] != 'E':
+        if self.container[1] == 'E' and state.boat.stowage[self.cell[0]][self.cell[1]] != 'E':
             return False
 
         #Checking that the container we want to load is in the port
-        if self.container not in state.port[self.port]:
+        if self.container not in state.ports[self.port]:
             return False
 
         return True
@@ -96,9 +96,9 @@ class Unload(Action):
     def applyAction(self, state):
         # make changes in state(port, boat) with init data: stowage-cont, port + cont
         new_state = copy.deepcopy(state)
-        new_state[0][self.port].append(self.container)
-        print(state[1].get_layout())
-        new_state[1].stowage[self.cell[0]][self.cell[1]] = 'state.get_layout()'
+        new_state.ports[self.port].append(self.container)
+        layout= state.get_layout()
+        new_state.boat.stowage[self.cell[0]][self.cell[1]] = layout[self.cell[0]][self.cell[1]]
         return new_state
 
     def isLegal(self, state):
@@ -108,15 +108,15 @@ class Unload(Action):
 
         #check that there is no container over the one to unload
         for k in range(depth):
-            if state[1].stowage[stack][k] not in ('N', 'E'):
+            if state.boat.stowage[stack][k] not in ('N', 'E'):
                 return False
 
         #Check that the boat is in the port
-        if self.port != state[1].port:
+        if self.port != state.boat.port:
             return False
 
         #Check that the Container to extract is in the cell specified
-        if state[1].stowage[stack][depth] != self.container:
+        if state.boat.stowage[stack][depth] != self.container:
             return False
 
         return True

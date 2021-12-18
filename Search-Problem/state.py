@@ -8,6 +8,9 @@ from file_constants import Constant
 CRED = '\033[91m'
 CEND = '\033[0m'
 
+_LAYOUT_ = []
+_CONTAINERS_ = []
+
 
 class Boat(object):
     def __init__(self, port: int, stowage: list):
@@ -39,12 +42,6 @@ class State:
     def __init__(self, ports: list, boat: object):
         self.ports = ports  # container = (id, type, port_destination)
         self.boat = boat
-
-    def get_all_containers(self):
-        return self.port0
-
-    def get_layout(self):
-        return self.layout0
 
     def is_goal(self):
         if self.ports == self.get_Final():
@@ -78,15 +75,27 @@ class State:
         finalPorts = [[], port1, port2]
 
         #obtain final layout of Boat
+        finalBoat0 = Boat(0, layout0)
         finalBoat = Boat(1, layout0)
         finalBoat2 = Boat(2, layout0)
-        self.FINAL_STATE = [State(finalPorts, finalBoat), State(finalPorts, finalBoat2)]
+        self.FINAL_STATE = [State(finalPorts, finalBoat0), State(finalPorts, finalBoat), State(finalPorts, finalBoat2)]
 
-        self.port0 = port0
-        self.layout0 = layout0
+        global _CONTAINERS_
+        _CONTAINERS_ = port0
+
+        global _LAYOUT_
+        _LAYOUT_ = layout0
 
     def get_Init(self):
         return self.INITIAL_STATE
 
     def get_Final(self):
         return self.FINAL_STATE
+
+    def get_all_containers(self):
+        global _CONTAINERS_
+        return _CONTAINERS_
+
+    def get_layout(self):
+        global _LAYOUT_
+        return _LAYOUT_
