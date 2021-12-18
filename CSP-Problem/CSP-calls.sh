@@ -1,1 +1,3 @@
+#!/bin/sh
 python CSPStowage.py CSP-tests map1 container1
+cmd.exe

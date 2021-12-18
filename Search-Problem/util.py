@@ -1,3 +1,5 @@
+import heapq
+
 class PriorityQueue(object):
     """
       Implements a priority queue data structure. Each inserted item

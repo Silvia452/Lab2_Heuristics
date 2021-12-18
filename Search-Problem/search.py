@@ -65,6 +65,8 @@ def generalGraphSearch(problem, structure):
 
     # Initialise the list of visited nodes to an empty list
     visited = []
+    print(visited)
+
     #cost=0
     #expanded_nodes = 0
 
@@ -100,14 +102,15 @@ def generalGraphSearch(problem, structure):
     # If search fails, return False
     return False
 
-def aStarSearch(problem, heuristic=nullHeuristic):
+def aStarSearch(problem, heuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
 
     # The cost for a* seach is f(x) = g(x) + h(x)
     # The heuristic is h(x), heuristic(state, problem),
     # where state = path[-1][0], which is the first element in the last tuple of the path
-    f = lambda path: problem.getCostOfActions([x[1] for x in path][1:]) + heuristic(path[-1][0], problem)
-    h = lambda path: heuristic(path[-1][0], problem)
+
+    f = lambda path: problem.getCostOfActions([x[1] for x in path][1:]) + heuristic(problem, path[-1][0])
+    h = lambda path: heuristic(problem, path[-1][0])
 
     # Construct an empty priority queue that sorts using f(x) and breaks ties by h(x)
     pq = PriorityQueueWithFunction((f, h))

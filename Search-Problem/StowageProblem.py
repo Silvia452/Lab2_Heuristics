@@ -1,6 +1,6 @@
 from state import State
 from action import Load, Sail, Unload
-from search.search import SearchProblem
+from search import SearchProblem
 
 
 class StowageProblem(SearchProblem):
@@ -29,9 +29,10 @@ class StowageProblem(SearchProblem):
             #obtain tuples of containers
             for cont in self.containers:
                 #obtain each cell of boat stowage
-                for cell in self.layout:
-                    all_act.append(Load(p, cont, cell))
-                    all_act.append(Unload(p, cont, cell))
+                for cell_x in range(len(self.layout)):
+                    for cell_y in range(len(self.layout[cell_x])):
+                        all_act.append(Load(p, cont, (cell_x, cell_y)))
+                        all_act.append(Unload(p, cont, (cell_x, cell_y)))
         return all_act
 
     def get_valid_actions(self, state, all_action):
@@ -55,14 +56,20 @@ class StowageProblem(SearchProblem):
 
         for action in self.getLegalActions(state):
             newstate = action.applyAction(state)
-            action = action.__str__()
-            stepCost = action.cost
-            succesors.append((newstate, action, stepCost))
+            str_action = action.__str__()
+            stepCost = action.costAction()
+            succesors.append((newstate, str_action, stepCost))
 
         return succesors
 
     def getCostOfActions(self, actions):
-        return [action.costAction() for action in actions]
+        #TODO
+        #'Sail (Origin: 0, Destination: 1)'
+        totalCost = []
+        for action in actions:
+                name = r'(\w): \('
+
+        return sum(totalCost)
 
     def getEstimation2Boats(self, state):
         """
@@ -77,9 +84,9 @@ class StowageProblem(SearchProblem):
         loadCost = 10
         unloadCost = 15
         sailCost = 35
-        estimate = (loadCost + unloadCost)*len(state.ports[0])
-        estimate += unloadCost * state.boat.get_container_stowage()
-        if state.boat.port == 0:
+        estimate = (loadCost + unloadCost)*len(state[0][0])
+        estimate += unloadCost * state[1].get_container_stowage()
+        if state[1].port == 0:
             estimate += 2 * sailCost
         return estimate
 
@@ -87,6 +94,8 @@ class StowageProblem(SearchProblem):
         loadCost = 10
         unloadCost = 15
         sailCost = 35
+
+
 
 
 
