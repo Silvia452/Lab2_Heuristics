@@ -49,8 +49,8 @@ class Load(Action):
         #make changes in state(port, boat) with init data: port-cont, stowage+
 
         new_state = copy.deepcopy(state)
-        new_state[1].stowage[self.cell[0]][self.cell[1]] = self.container
-        new_state[0][self.port].remove(self.container)
+        new_state.boat.stowage[self.cell[0]][self.cell[1]] = self.container
+        new_state.port[self.port].remove(self.container)
 
         return new_state
 
@@ -58,16 +58,16 @@ class Load(Action):
         #check preconditions: Cell is Empty, State.Boat.notfloating, boat_port, special_cell, cont_port
 
         #proving that the cell we want to load is not floating
-        if not state[1]._notFloating():
+        if not state.boat._notFloating():
             return False
 
         #Proving that we can insert the container in the Standard or Refrigerated
 
-        if not state[1].stowage[self.cell[0]][self.cell[1]] in ('N', 'E'):
+        if not state.boat.stowage[self.cell[0]][self.cell[1]] in ('N', 'E'):
             return False
 
         #Check that the boat is in the port
-        if self.port != state[1].port:
+        if self.port != state.boat.port:
             return False
 
         #Checking that if the container is energy needs to go into the refrigerated
@@ -75,7 +75,7 @@ class Load(Action):
             return False
 
         #Checking that the container we want to load is in the port
-        if self.container not in state[0][self.port]:
+        if self.container not in state.port[self.port]:
             return False
 
         return True
