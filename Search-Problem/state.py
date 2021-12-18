@@ -13,7 +13,6 @@ class Boat(object):
     def __init__(self, port: int, stowage: list):
         self.port = port
         self.stowage = stowage
-        self.layout = stowage
 
     def _notFloating(self):
         # check every container is not floating
@@ -65,7 +64,7 @@ class State:
         layout0 = Constant.init_map(file_layout)
         initBoat = Boat(0, layout0)
 
-        self.INITIAL_STATE = (initPorts, initBoat)
+        self.INITIAL_STATE = State(initPorts, initBoat)
 
         #obtain final distribution of ports
         port1 = []
@@ -79,8 +78,9 @@ class State:
         finalPorts = [[], port1, port2]
 
         #obtain final layout of Boat
-        finalBoat = Boat(2, layout0)
-        self.FINAL_STATE = (finalPorts, finalBoat)
+        finalBoat = Boat(1, layout0)
+        finalBoat2 = Boat(2, layout0)
+        self.FINAL_STATE = [State(finalPorts, finalBoat), State(finalPorts, finalBoat2)]
 
         self.port0 = port0
         self.layout0 = layout0

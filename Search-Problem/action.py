@@ -95,10 +95,10 @@ class Unload(Action):
 
     def applyAction(self, state):
         # make changes in state(port, boat) with init data: stowage-cont, port + cont
-        print('Unload: {}'.format(self.port))
         new_state = copy.deepcopy(state)
         new_state[0][self.port].append(self.container)
-        new_state[1].stowage[self.cell[0]][self.cell[1]] = new_state[1].layout[self.cell[0]][self.cell[1]]
+        print(state[1].get_layout())
+        new_state[1].stowage[self.cell[0]][self.cell[1]] = 'state.get_layout()'
         return new_state
 
     def isLegal(self, state):

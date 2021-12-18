@@ -15,6 +15,7 @@ class StowageProblem(SearchProblem):
         self.containers = state.get_all_containers()
         self.layout = state.get_layout()
 
+
     def getLegalActions(self, state):
         all_actions = self.get_all_actions()
         return self.get_valid_actions(state, all_actions)
@@ -49,7 +50,6 @@ class StowageProblem(SearchProblem):
 
         for action in all_action:
             if action.isLegal(state):
-                print(action)
                 valid_actions.append(action)
 
         return valid_actions
@@ -62,7 +62,7 @@ class StowageProblem(SearchProblem):
             str_action = action.__str__()
             stepCost = action.costAction()
             succesors.append((newstate, str_action, stepCost))
-
+        #print('\nFor State: P:{}, B:{}\t{}'.format(state[0], state[1].port, state[1].stowage))
         return succesors
 
     def getCostOfActions(self, actions):
@@ -75,16 +75,20 @@ class StowageProblem(SearchProblem):
         for action in actions:
             args = re.findall(r'\d+', action)
             if re.match('Sail', action):
-                action = Sail(int(args[0]), int(args[1])).costAction()
-
+                totalCost.append(Sail(int(args[0]), int(args[1])).costAction())
             else:
                 container = self.containers[int(args[1])]
                 cell = (int(args[2]), int(args[3]))
                 if re.match('Load', action):
-                    action = Load(args[0], container, cell).costAction()
+                    totalCost.append(Load(args[0], container, cell).costAction())
                 elif re.match('Unload', action):
-                    action = Load(args[0], container, cell).costAction()
+                    totalCost.append(Unload(args[0], container, cell).costAction())
         return sum(totalCost)
+
+    def isGoalState(self, state):
+        #print('\nFor State: P:{}, B:{}\t{}'.format(state[0], state[1].port, state[1].stowage))
+        #print('Goal State: P:{}, B:{}\t{}'.format(self.goal[0], self.goal[1].port, self.goal[1].stowage))
+        return self.goal[0] == state[0] and self.goal[1].port == state[1].port and self.goal[1].stowage == state[1].stowage
 
     def getEstimation2Boats(self, state):
         """

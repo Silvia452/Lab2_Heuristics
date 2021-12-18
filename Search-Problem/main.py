@@ -28,6 +28,7 @@ def main(path, layout, container, heur):
     # Find Solution Path
     actions = lambda prob : aStarSearch(problem, heuristic=heuristic)
     #Obtain cost from actions
+    print(actions)
     totalCost = problem.getCostOfActions(actions(problem))
     print('Solution found with total cost of %d in %.5f seconds' % (totalCost, time.time() - starttime))
 
