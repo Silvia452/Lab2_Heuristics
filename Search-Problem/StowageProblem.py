@@ -101,8 +101,8 @@ class StowageProblem(SearchProblem):
         sailCost = 3500
         estimate = (loadCost + unloadCost) * len(state.ports[0])
         estimate += unloadCost * len(state.boat.get_container_stowage())
-        if state.boat.port == 0 or state.boat.port == 1:
-            estimate += sailCost
+        #if state.boat.port == 0 or state.boat.port == 1:
+        #    estimate += sailCost
         return estimate
 
     def getEstimationCorrectCollocation(self, state):
