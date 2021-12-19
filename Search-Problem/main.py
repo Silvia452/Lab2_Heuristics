@@ -49,6 +49,7 @@ def main(path, layout, container, heur):
     fd_stat.write(str_stat)
 
 
+
 if __name__ == '__main__':
     """
     The main function called when CSPStowage.py is run
