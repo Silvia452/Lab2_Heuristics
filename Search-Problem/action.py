@@ -143,12 +143,14 @@ class Unload(Action):
         if self.port != state.boat.port:
             return False
 
-        # Check that the port is not 0
-        if state.boat.port == 0:
-            return False
-
         # Check that the Container to extract is in the cell specified
         if state.boat.stowage[stack][depth] != self.container:
+            return False
+
+        # -------------- Reducing nodes ---------------
+
+        # Check that the port is not 0
+        if state.boat.port == 0:
             return False
 
         #Check all containers go to Port 2

@@ -23,10 +23,18 @@ class Constant:
         for n in range(len(raw_lines[0].split())):
             layout.append([])
 
+        stack = 0
         for line in raw_lines:
             regex = r"((N|E|X)\s)*(N|E|X){1}(\n)*"
 
             line_list = line.split()  # => [N,N,N,N]
+
+            if stack == 0:
+                stack = len(line_list)
+            else:
+                if stack != len(line_list):
+                    print(print(CRED + 'error parsing test file: %s' % file + CEND))
+                    sys.exit(1)
 
             for n in range(len(line_list)):
                 if re.match(regex, line_list[n]) is None:
