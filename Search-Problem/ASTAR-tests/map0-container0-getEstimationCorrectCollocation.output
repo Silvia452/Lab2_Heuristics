@@ -1,9 +1,0 @@
-Solution Path:
-0.	Load (Port: 0, Container: 2, Cell: (0, 1))
-0.	Load (Port: 0, Container: 0, Cell: (0, 0))
-0.	Load (Port: 0, Container: 1, Cell: (1, 0))
-0.	Sail (Origin: 0, Destination: 1)
-0.	Unload (Port: 1, Container: 0, Cell: (0, 0))
-0.	Sail (Origin: 1, Destination: 2)
-0.	Unload (Port: 2, Container: 1, Cell: (1, 0))
-0.	Unload (Port: 2, Container: 2, Cell: (0, 1))

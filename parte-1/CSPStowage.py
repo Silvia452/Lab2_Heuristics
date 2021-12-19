@@ -120,9 +120,9 @@ def main(path, layout, container):
     file_sol = os.getcwd() + r'/' + path + r'/' + layout + '-' + container + '.output'
     fd_sol = open(file_sol, 'w')
 
-    fd_sol.write(" #Number of solutions: " + str(len(solution)) + "\n")
+    fd_sol.write(" #Number of solutions: " + str(len(solution)) )
     for s in solution:
-        fd_sol.write(str(s) + "\n")
+        fd_sol.write(str(s))
 
     fd_sol.close()
 
