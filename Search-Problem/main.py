@@ -14,6 +14,14 @@ def main(path, layout, container, heur):
     file_containers = os.getcwd() + r'/' + path + r'/' + container
     if not os.path.isfile(file_containers): raise Exception("The container list " + file_containers + "cannot be found")
 
+    # Write the solution file
+    file_solution = os.getcwd() + r'/' + path + r'/' + layout + '-' + container + '-' + heur + '.output'
+    fd_sol = open(file_solution, 'a')
+
+    #Write the statistic file
+    file_stat = os.getcwd() + r'/' + path + r'/' + layout + '-' + container + '-' + heur + '.stat'
+    fd_stat = open(file_stat, 'w')
+
     #Start running time
     starttime = time.time()
 
@@ -28,10 +36,17 @@ def main(path, layout, container, heur):
     solution, nodes = actions(problem)
     #Obtain Solution Statistics
     totalCost = problem.getCostOfActions(solution)
-    print('Solution Path:')
+    init_sol = 'Solution Path:'
+    fd_sol.write(init_sol)
+
+    i = 0
     for step in solution:
-        print('\t{}'.format(step))
-    print('Solution Statistic: \n\tExpanded nodes: %d\n\tTotal cost of %d \n\tTime: %.5f seconds' % (nodes, totalCost, time.time() - starttime))
+        line = '{}\t{}'.format(i, step)
+        fd_sol.write(line)
+
+    str_stat = 'Solution Statistic: \n\tExpanded nodes: %d\n\tTotal cost of %d \n\tTime: %.5f seconds' % (nodes, totalCost, time.time() - starttime)
+
+    fd_stat.write(str_stat)
 
 
 if __name__ == '__main__':

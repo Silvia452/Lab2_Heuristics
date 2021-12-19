@@ -40,7 +40,8 @@ class Sail(Action):
         #Fill all space in boat stowage
         if state.boat.port == 0 and state.boat.get_space_stowage() >= len(state.ports[0]) > 0 :
             return False
-
+        if len(state.ports[0]) >= 0 and state.boat.port == 0 and state.boat.get_space_stowage() == 0:
+            return False
         # In Port 1: Do all Unload/Load redistributions
         if state.boat.port == 1:
             # Verify that there are no containers to port 1 in boat,
