@@ -41,13 +41,14 @@ def main(path, layout, container, heur):
 
     i = 0
     for step in solution:
-        line = '{}\t{}'.format(i, step)
+        line = '{}.\t{}'.format(i, step)
         fd_sol.write(line)
 
-    str_stat = 'Solution Statistic: \n\tExpanded nodes: %d\n\tTotal cost of %d \n\tTime: %.5f seconds' % (nodes, totalCost, time.time() - starttime)
+    str_stat = 'Expanded nodes: %d\nOverall cost: %d \nPlan length: %d\nOverall time: %.5f seconds' % (nodes, totalCost,len(solution) ,time.time() - starttime)
 
     fd_stat.write(str_stat)
-
+    fd_sol.close()
+    fd_stat.close()
 
 
 if __name__ == '__main__':
