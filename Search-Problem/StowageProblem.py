@@ -105,6 +105,16 @@ class StowageProblem(SearchProblem):
             estimate += sailCost
         return estimate
 
-    def getEstimation(self, state):
-        estimate = []
+    def getEstimationCorrectCollocation(self, state):
+        # Relaxation: suppose containers will only be loaded and unloaded once (no relocation in port 1) and costs are uniform
+        loadCost = 10
+        unloadCost = 15
+        sailCost = 3500
+        estimate = loadCost * len(state.ports[0])
+        estimate += unloadCost * len(state.boat.get_container_stowage())
+        if state.boat.port == 0:
+            estimate += 2 * sailCost
+        elif state.boat.port == 1:
+            estimate += sailCost
+        return estimate
 
