@@ -62,6 +62,7 @@ class RunProblem:
                 if self.containers[x][2] == "2" and self.containers[y][2] == "1":
                     self.problem.addConstraint(self.constraintNoRedistribution, variables=[x, y])
 
+
         self.find_solution()
 
     def find_solution(self):
@@ -70,6 +71,7 @@ class RunProblem:
         print(" #Number of solutions: {0}".format(len(solutions)))
         for i_sol in solutions:
             print(i_sol)
+
         return solutions
 
     def constraintNotFloatingCell(self, *container_domain):
@@ -112,17 +114,18 @@ def main(path, layout, container):
     cont = os.getcwd() + r'/' + path + r'/' + container
     if cont is None: raise Exception("The container list " + container + "cannot be found")
 
-    solution = RunProblem(layout=map, container=cont)
-
-    #write file solution
+    problem = RunProblem(layout=map, container=cont)
+    solution = problem.find_solution()
+    # write file solution
     file_sol = os.getcwd() + r'/' + path + r'/' + layout + '-' + container + '.output'
     fd_sol = open(file_sol, 'w')
 
-    fd_sol.write(" #Number of solutions: " + str(len(solution)))
+    fd_sol.write(" #Number of solutions: " + str(len(solution)) + "\n")
     for s in solution:
-        fd_sol.write(str(s))
+        fd_sol.write(str(s) + "\n")
 
     fd_sol.close()
+
 
 
 if __name__ == '__main__':

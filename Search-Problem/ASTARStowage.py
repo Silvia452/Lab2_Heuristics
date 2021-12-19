@@ -36,13 +36,14 @@ def main(path, layout, container, heur):
     solution, nodes = actions(problem)
     #Obtain Solution Statistics
     totalCost = problem.getCostOfActions(solution)
-    init_sol = 'Solution Path:'
+    init_sol = 'Solution Path:\n'
     fd_sol.write(init_sol)
 
     i = 0
     for step in solution:
-        line = '{}.\t{}'.format(i, step)
+        line = '{}.\t{}\n'.format(i, step)
         fd_sol.write(line)
+        i +=1
 
     str_stat = 'Expanded nodes: %d\nOverall cost: %d \nPlan length: %d\nOverall time: %.5f seconds' % (nodes, totalCost,len(solution) ,time.time() - starttime)
 
