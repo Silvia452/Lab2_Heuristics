@@ -1,5 +1,4 @@
 import re
-
 from state import State
 from action import Load, Sail, Unload
 from search import SearchProblem
@@ -27,7 +26,7 @@ class StowageProblem(SearchProblem):
         # sail
         all_act = [Sail(0, 1), Sail(1, 2)]
         # load/unload from port 0/1/2
-        for p in range(2):
+        for p in range(3):
             # obtain tuples of containers
             for cont in self.containers:
                 # obtain each cell of boat stowage
@@ -60,16 +59,13 @@ class StowageProblem(SearchProblem):
             str_action = action.__str__()
             stepCost = action.costAction()
             succesors.append((newstate, str_action, stepCost))
-
         return succesors
 
     def getCostOfActions(self, actions):
-        # 'Sail (Origin: 0, Destination: 1)'
-        # 'Load (Port: 0, Container: 0, Cell: (0,0))'
         totalCost = []
-        sail = r'Sail: \(Origin: (\d+), Destination: (\d+)\)'
-        load = r'Load: \(Port: (\d+), Container: (\d+), Cell: \((\d+),(\d+)\)\)'
-        unload = r'Unload: \(Port: (\d+), Container: (\d+), Cell: \((\d+),(\d+)\)\)'
+        #sail = r'Sail: (Origin: \d+, Destination: \d+)'
+        #load = r'Load: (Port: \d+, Container: \d+, Cell: (\d+,\d+))'
+        #unload = r'Unload: (Port: \d+, Container: \d+, Cell: (\d+,\d+))'
         for action in actions:
             args = re.findall(r'\d+', action)
             if re.match('Sail', action):
@@ -84,8 +80,6 @@ class StowageProblem(SearchProblem):
         return sum(totalCost)
 
     def isGoalState(self, state):
-        # print('\nFor State: P:{}, B:{}\t{}'.format(state[0], state[1].port, state[1].stowage))
-        # print('Goal State: P:{}, B:{}\t{}'.format(self.goal[0], self.goal[1].port, self.goal[1].stowage))
         for goal in self.goal:
             if goal.ports == state.ports and goal.boat.port == state.boat.port \
                     and goal.boat.stowage == state.boat.stowage:
@@ -104,14 +98,13 @@ class StowageProblem(SearchProblem):
         """
         loadCost = 10
         unloadCost = 15
-        sailCost = 35
+        sailCost = 3500
         estimate = (loadCost + unloadCost) * len(state.ports[0])
-        estimate += unloadCost * state.boat.get_container_stowage()
-        if state.boat.port == 0:
-            estimate += 2 * sailCost
+        estimate += unloadCost * len(state.boat.get_container_stowage())
+        if state.boat.port == 0 or state.boat.port == 1:
+            estimate += sailCost
         return estimate
 
     def getEstimation(self, state):
-        loadCost = 10
-        unloadCost = 15
-        sailCost = 35
+        estimate = []
+

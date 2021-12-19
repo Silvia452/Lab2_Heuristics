@@ -106,8 +106,8 @@ def generalGraphSearch(problem, structure):
                     successorPath.append(successor)
                     # Push the successor's path into the structure
                     structure.push(successorPath)
-    # If search fails, return False
-    return False
+    # If search fails, return empty list
+    return [], expanded_nodes
 
 def aStarSearch(problem, heuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
@@ -117,9 +117,7 @@ def aStarSearch(problem, heuristic):
     # where state = path[-1][0], which is the first element in the last tuple of the path
 
     f = lambda path: problem.getCostOfActions([x[1] for x in path][1:]) + heuristic(problem, path[-1][0])
-    print('Hwllo')
     h = lambda path: heuristic(problem, path[-1][0])
-    print('Aws')
 
     # Construct an empty priority queue that sorts using f(x) and breaks ties by h(x)
     pq = PriorityQueueWithFunction((f, h))

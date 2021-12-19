@@ -29,10 +29,18 @@ class Boat(object):
         return True
 
     def get_container_stowage(self):
-        containers = 0
+        containers = []
         for stack in self.stowage:
             for cell in stack:
                 if cell not in ('N', 'E', 'X'):
+                    containers.append(cell)
+        return containers
+
+    def get_space_stowage(self):
+        containers = 0
+        for stack in self.stowage:
+            for cell in stack:
+                if cell in ('N', 'E'):
                     containers += 1
         return containers
 

@@ -6,18 +6,13 @@ import time
 
 
 def main(path, layout, container, heur):
-
-    usageStr = """
-    USAGE:      python
-    EXAMPLES:   (1) python 
-    """
+    #Choose the layout file
     file_map = os.getcwd() + r'/' + path + r'/' + layout
     if not os.path.isfile(file_map): raise Exception("The layout " + file_map + " cannot be found")
 
-    # Choose a container list
+    # Choose the container list
     file_containers = os.getcwd() + r'/' + path + r'/' + container
     if not os.path.isfile(file_containers): raise Exception("The container list " + file_containers + "cannot be found")
-
 
     #Start running time
     starttime = time.time()
@@ -29,7 +24,6 @@ def main(path, layout, container, heur):
     heuristic = getattr(StowageProblem, heur)
 
     # Find Solution Path
-    # def actions(prob)
     actions = lambda prob : aStarSearch(problem, heuristic=heuristic)
     solution, nodes = actions(problem)
     #Obtain Solution Statistics
